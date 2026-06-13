@@ -48,8 +48,7 @@ Add to your `openclaw.json` (see `examples/openclaw-plugin-config.json` for a fu
             { "channel": "discord", "to": "user:YOUR_DISCORD_USER_ID" }
           ],
           "checkinTime": "07:00",
-          "reviewTime": "20:30",
-          "reviewDay": "Sunday"
+          "reviewTime": "23:00"
         }
       }
     }
@@ -81,8 +80,7 @@ npm test        # run the test suite
 | `user` | string | ✅ | — | User identifier (name/handle) |
 | `deliveryChannels` | array | ✅ | — | Ordered delivery channels (first = primary, rest = fallback) |
 | `checkinTime` | string | ✅ | — | Daily task-delivery time (`HH:MM`, 24 h) |
-| `reviewTime` | string | | `"20:30"` | Weekly review time (`HH:MM`, 24 h) |
-| `reviewDay` | string | | `"Sunday"` | Weekly review day |
+| `reviewTime` | string | | `"23:00"` | Daily review/check-in time |
 | `allowAgentMessages` | boolean | | `true` | Allow delivery via agent message tool |
 
 ### Delivery Channels
@@ -154,11 +152,12 @@ Return the full raw state as JSON — useful for debugging or seeding agent cont
 ```
 07:00  cron → agent calls habit_tasks → delivers task list to user
   ...  user reports activity → agent calls habit_checkin({ taskId })
-Sunday 20:30  cron → agent calls habit_report(period="weekly") → delivers weekly review
+23:00  cron → agent calls habit_progress → delivers daily review
+Sunday 23:30 cron → agent calls habit_report(period="weekly") → delivers weekly review
 ```
 
-The `gateway_start` hook automatically registers the task cron and weekly review cron on startup.
-Times are configured via `checkinTime`, `reviewDay`, and `reviewTime`.
+The `gateway_start` hook automatically registers task, daily review, and weekly review cron jobs on startup.
+Task and daily review times are configured via `checkinTime` and `reviewTime`; weekly review is fixed to Sunday 23:30.
 
 ## Dynamic Difficulty
 
