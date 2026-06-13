@@ -99,7 +99,7 @@ export const gatewayStartHandler: any = async (_event: any, ctx: any) => {
   const openClawConfig = (ctx.config || {}) as Record<string, unknown>
   const cfg = ((openClawConfig as any)?.plugins?.entries?.['habit-coach']?.config || {}) as Record<string, unknown>
   const stateFile = (cfg.stateFile as string) || './habit-state.json'
-  const user = (cfg.user as string) || 'Luc'
+  const user = (cfg.user as string) || 'user'
   const checkinTime = (cfg.checkinTime as string) || '07:00'
   const reviewTime = (cfg.reviewTime as string) || '23:00'
   const deliveryChannels: DeliveryChannel[] = (cfg.deliveryChannels as DeliveryChannel[]) || []

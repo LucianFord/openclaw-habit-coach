@@ -76,7 +76,7 @@ export const gatewayStartHandler = async (_event, ctx) => {
     const openClawConfig = (ctx.config || {});
     const cfg = (openClawConfig?.plugins?.entries?.['habit-coach']?.config || {});
     const stateFile = cfg.stateFile || './habit-state.json';
-    const user = cfg.user || 'Luc';
+    const user = cfg.user || 'user';
     const checkinTime = cfg.checkinTime || '07:00';
     const reviewTime = cfg.reviewTime || '23:00';
     const deliveryChannels = cfg.deliveryChannels || [];
