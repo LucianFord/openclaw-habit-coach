@@ -80,6 +80,7 @@ export interface HabitConfig {
     deliveryChannels: DeliveryChannel[];
     checkinTime: string;
     reviewTime: string;
+    weeklyReviewTime: string;
     allowAgentMessages?: boolean;
 }
 export interface HabitState {

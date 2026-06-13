@@ -77,6 +77,11 @@
         "type": "string",
         "description": "Time for daily task delivery (HH:MM format, 24h)",
         "default": "07:00"
+      },
+      "weeklyReviewTime": {
+        "type": "string",
+        "description": "Time for weekly review on Sunday (HH:MM format, 24h)",
+        "default": "23:30"
       }
     },
     "required": [

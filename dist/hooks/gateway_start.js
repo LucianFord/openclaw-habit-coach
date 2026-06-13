@@ -33,7 +33,7 @@ function buildDailyReviewCronMessage(config) {
 }
 function buildWeeklyReviewCronMessage(config) {
     const channels = deliveryChannelsDesc(config.deliveryChannels);
-    return `🌙 哥哥，周日 23:30 到每周复盘时间了。请执行以下步骤：
+    return `🌙 哥哥，周日 ${config.weeklyReviewTime} 到每周复盘时间了。请执行以下步骤：
 
 1. 读取并遵循 /home/greylee/Projects/openclaw-habit-coach/skills/habit-coach/SKILL.md
 2. 调用 habit_report({ period: "weekly", stateFile: ${JSON.stringify(config.stateFile)}, user: ${JSON.stringify(config.user)} }) 查看近 7 天趋势
@@ -91,6 +91,7 @@ export const gatewayStartHandler = async (_event, ctx) => {
     const user = cfg.user || 'Luc';
     const checkinTime = cfg.checkinTime || '07:00';
     const reviewTime = cfg.reviewTime || '23:00';
+    const weeklyReviewTime = cfg.weeklyReviewTime || '23:30';
     const deliveryChannels = cfg.deliveryChannels || [];
     const habitConfig = {
         stateFile,
@@ -98,6 +99,7 @@ export const gatewayStartHandler = async (_event, ctx) => {
         deliveryChannels,
         checkinTime,
         reviewTime,
+        weeklyReviewTime,
         allowAgentMessages: cfg.allowAgentMessages,
     };
     const existingJobs = await cron.list({ includeDisabled: true });
@@ -112,10 +114,11 @@ export const gatewayStartHandler = async (_event, ctx) => {
     const reviewName = `Habit Coach - 复盘 (${reviewTime})`;
     desiredNames.add(reviewName);
     await ensureCron(cron, reviewName, `${reviewMinute} ${reviewHour} * * *`, buildDailyReviewCronMessage(habitConfig), existingJobs);
-    // 创建每周复盘 cron（固定周日 23:30，不开放配置）
-    const weeklyReviewName = `Habit Coach - 周复盘 (Sunday 23:30)`;
+    // 创建每周复盘 cron（周日，时间可配置）
+    const [weeklyReviewHour, weeklyReviewMinute] = weeklyReviewTime.split(':');
+    const weeklyReviewName = `Habit Coach - 周复盘 (Sunday ${weeklyReviewTime})`;
     desiredNames.add(weeklyReviewName);
-    await ensureCron(cron, weeklyReviewName, `30 23 * * 0`, buildWeeklyReviewCronMessage(habitConfig), existingJobs);
+    await ensureCron(cron, weeklyReviewName, `${weeklyReviewMinute} ${weeklyReviewHour} * * 0`, buildWeeklyReviewCronMessage(habitConfig), existingJobs);
     // 清理旧配置留下的 Habit Coach cron
     for (const job of existingJobs) {
         const name = job.name;

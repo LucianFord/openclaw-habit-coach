@@ -81,6 +81,7 @@ npm test        # run the test suite
 | `deliveryChannels` | array | ✅ | — | Ordered delivery channels (first = primary, rest = fallback) |
 | `checkinTime` | string | ✅ | — | Daily task-delivery time (`HH:MM`, 24 h) |
 | `reviewTime` | string | | `"23:00"` | Daily review/check-in time |
+| `weeklyReviewTime` | string | | `"23:30"` | Weekly review time on Sunday (`HH:MM`, 24 h) |
 | `allowAgentMessages` | boolean | | `true` | Allow delivery via agent message tool |
 
 ### Delivery Channels
@@ -157,7 +158,7 @@ Sunday 23:30 cron → agent calls habit_report(period="weekly") → delivers wee
 ```
 
 The `gateway_start` hook automatically registers task, daily review, and weekly review cron jobs on startup.
-Task and daily review times are configured via `checkinTime` and `reviewTime`; weekly review is fixed to Sunday 23:30.
+Task/daily review times are configured via `checkinTime` and `reviewTime`; weekly review time is configured via `weeklyReviewTime` (default: Sunday 23:30).
 
 ## Dynamic Difficulty
 
