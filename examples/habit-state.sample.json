@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "user": "alice",
+  "createdAt": "2026-06-01T00:00:00.000Z",
+  "updatedAt": "2026-06-13T22:00:00.000Z",
+
+  "issues": [
+    {
+      "id": "exercise-1717200000000",
+      "category": "exercise",
+      "issue": "Build a consistent workout habit",
+      "severity": "high",
+      "status": "active",
+      "notes": "",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "sleep-1717200001000",
+      "category": "sleep",
+      "issue": "Sleep by 11 pm consistently",
+      "severity": "medium",
+      "status": "active",
+      "notes": "",
+      "updatedAt": "2026-06-01T00:00:00.000Z"
+    }
+  ],
+
+  "changePlan": {
+    "version": 1,
+    "startDate": "2026-06-01",
+    "currentPhase": 0,
+    "phases": [
+      {
+        "phase": 0,
+        "name": "Startup",
+        "duration": "3 weeks",
+        "focus": "exercise",
+        "active": true,
+        "goals": [
+          {
+            "description": "Exercise at least 3 times per week",
+            "target": "3 workouts/week",
+            "metric": "times/week",
+            "done": false
+          }
+        ]
+      }
+    ]
+  },
+
+  "dailyLog": [
+    {
+      "date": "2026-06-12",
+      "tasks": [
+        {
+          "id": "exercise-1749686400000-1234",
+          "title": "Do 10 push-ups and 10 squats",
+          "category": "exercise",
+          "completed": true,
+          "completedAt": "2026-06-12T09:30:00.000Z",
+          "skipped": false,
+          "difficulty": "easy"
+        },
+        {
+          "id": "sleep-1749686400000-5678",
+          "title": "Be in bed with lights off by 11:30pm",
+          "category": "sleep",
+          "completed": false,
+          "skipped": false,
+          "difficulty": "easy"
+        }
+      ],
+      "completedCount": 1,
+      "totalCount": 2,
+      "completionRate": 0.5,
+      "notes": "",
+      "mood": "okay"
+    }
+  ],
+
+  "streaks": [
+    {
+      "habitId": "exercise",
+      "currentStreak": 3,
+      "longestStreak": 7,
+      "lastDate": "2026-06-12",
+      "status": "active"
+    }
+  ],
+
+  "rewardConfig": {
+    "daily": "Agent praises you warmly and gives you free chat time",
+    "dailyThreshold": 1.0,
+    "weekly": "Agent gives you a special treat of your choosing",
+    "weeklyThreshold": 0.8,
+    "milestones": [
+      {
+        "id": "streak-30",
+        "description": "30-day workout streak",
+        "metric": "streak-days",
+        "threshold": 30,
+        "achieved": false,
+        "reward": "Buy something you've been wanting"
+      }
+    ]
+  },
+
+  "penaltyConfig": {
+    "daily": "Agent gives you a gentle reminder of your commitment",
+    "skipConsecutive": 3,
+    "skipPenalty": "Agent gives you a firm but caring reminder",
+    "liePenalty": "Agent calls you out clearly and resets trust",
+    "lieResetAt": ""
+  },
+
+  "rewardsEarned": [],
+  "penaltiesApplied": [],
+  "lieFlag": false,
+  "consecutiveMisses": 0
+}

@@ -1,0 +1,27 @@
+{
+  "_comment": "Paste the 'habit-coach' block into your openclaw.json under plugins.entries",
+  "plugins": {
+    "allow": ["habit-coach"],
+    "load": {
+      "paths": ["/path/to/openclaw-habit-coach"]
+    },
+    "entries": {
+      "habit-coach": {
+        "enabled": true,
+        "config": {
+          "stateFile": "/path/to/habit-state.json",
+          "user": "alice",
+          "deliveryChannels": [
+            {
+              "channel": "discord",
+              "to": "user:YOUR_DISCORD_USER_ID"
+            }
+          ],
+          "checkinTime": "07:00",
+          "reviewTime": "23:00",
+          "allowAgentMessages": true
+        }
+      }
+    }
+  }
+}

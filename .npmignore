@@ -1,0 +1,14 @@
+# Source (compiled output in dist/ is included via package.json "files")
+src/
+
+# Dev scripts
+scripts/
+sync.sh
+
+# Config / tooling
+tsconfig.json
+.gitignore
+*.log
+
+# Misc
+.DS_Store
