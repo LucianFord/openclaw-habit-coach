@@ -92,7 +92,8 @@ export interface HabitConfig {
   user: string
   deliveryChannels: DeliveryChannel[]  // ordered list; first = primary, rest = fallback
   checkinTime: string                // times for daily task delivery (HH:MM)
-  reviewTime: string                    // time for daily review (HH:MM), default "23:00"
+  reviewDay: string                     // day for weekly review (Sunday by default)
+  reviewTime: string                    // time for weekly review (HH:MM), default "20:30"
   allowAgentMessages?: boolean
 }
 

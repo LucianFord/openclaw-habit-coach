@@ -79,6 +79,7 @@ export interface HabitConfig {
     user: string;
     deliveryChannels: DeliveryChannel[];
     checkinTime: string;
+    reviewDay: string;
     reviewTime: string;
     allowAgentMessages?: boolean;
 }

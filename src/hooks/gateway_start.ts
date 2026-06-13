@@ -1,13 +1,10 @@
-// gateway_start hook — automatically creates/updates cron jobs on plugin startup
+// gateway_start hook — 插件启动时自动创建/更新 cron job
 
 import type { HabitConfig, DeliveryChannel } from '../store/types.js'
-import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
 
 const PLUGIN_ID = 'habit-coach'
-
-// Derive SKILL.md path relative to this file's compiled location (dist/hooks/)
-const SKILL_MD_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '../../skills/habit-coach/SKILL.md')
+const DEFAULT_REVIEW_DAY = 'Sunday'
+const DEFAULT_REVIEW_TIME = '20:30'
 
 function deliveryChannelsDesc(channels: DeliveryChannel[]): string {
   return channels.map(c => `{ channel: "${c.channel}", to: "${c.to}" }`).join(', ')
@@ -15,30 +12,31 @@ function deliveryChannelsDesc(channels: DeliveryChannel[]): string {
 
 function buildTaskCronMessage(config: HabitConfig): string {
   const channels = deliveryChannelsDesc(config.deliveryChannels)
-  return `☀️ Good morning, ${config.user}! It's ${config.checkinTime} — time to send today's tasks. Please:
+  return `☀️ 早安！${config.checkinTime} 到发任务时间了，请执行以下步骤：
 
-1. Read and follow the Habit Coach skill guide at: ${SKILL_MD_PATH}
-2. Call habit_tasks to get today's tasks (stateFile: ${config.stateFile}, user: ${config.user})
-3. Deliver the task list to ${config.user} via these channels (try in order, stop at first success):
-   ${channels}
-   Use: openclaw message send --channel <channel> --to <to> --message "..."
+1. 读取并遵循 /home/greylee/Projects/openclaw-habit-coach/skills/habit-coach/SKILL.md 中的 Habit Coach 技能指南
+2. 调用 habit_tasks 工具获取今日任务（stateFile: ${config.stateFile}, user: ${config.user}）
+3. 把生成的任务清单按以下规则投递给哥哥：
+   a. 投递渠道（按顺序尝试，第一个成功即停）：${channels}
+   b. 使用 exec + openclaw message send 投递（不要用 sessions_send）
+   c. 格式：openclaw message send --channel <channel> --to <to> --message "消息内容"
 
-Tone: warm and encouraging during the startup phase; match energy to their current streak.`
+语气按 SKILL.md 规则：首次启动期温暖鼓励，任务具体可执行`
 }
 
 function buildReviewCronMessage(config: HabitConfig): string {
   const channels = deliveryChannelsDesc(config.deliveryChannels)
-  return `🌙 It's ${config.reviewTime} — time for ${config.user}'s daily review.
+  return `🌙 哥哥，${config.reviewDay || DEFAULT_REVIEW_DAY} ${config.reviewTime} 到每周复盘时间了。请执行以下步骤：
 
-1. Read and follow the Habit Coach skill guide at: ${SKILL_MD_PATH}
-2. Call habit_progress to see today's progress (stateFile: ${config.stateFile}, user: ${config.user})
-3. Check whether ${config.user} checked in today (review today's interaction log)
-4. Based on completion, apply rewards or gentle follow-up per SKILL.md rules
-5. Deliver the review message to ${config.user}:
-   ${channels}
-   Use: openclaw message send --channel <channel> --to <to> --message "..."
+1. 读取并遵循 /home/greylee/Projects/openclaw-habit-coach/skills/habit-coach/SKILL.md
+2. 调用 habit_report({ period: "weekly", stateFile: ${JSON.stringify(config.stateFile)}, user: ${JSON.stringify(config.user)} }) 查看近 7 天趋势
+3. 检查哥哥这周有没有连续缺卡/低完成率，按 SKILL.md 规则温和追问
+4. 如果本周完成率高，按 rewardConfig 给奖励；如果低，给下周一个更小、更具体的调整方案
+5. 复盘消息投递给哥哥：
+   a. 投递渠道（按顺序尝试，第一个成功即停）：${channels}
+   b. 使用 exec + openclaw message send 投递（不要用 sessions_send）
 
-Remember: apply the reward/penalty rules from SKILL.md honestly. Be firm but caring.`
+注意：这是每周复盘，不是凌晨临时抽查。语气可以管着他，但不要羞辱。`
 }
 
 type CronService = {
@@ -46,6 +44,26 @@ type CronService = {
   add: (input: any) => Promise<any>
   update: (id: string, patch: any) => Promise<any>
   remove: (id: string) => Promise<any>
+}
+
+function dayNameToCronDay(day: string): string {
+  const map: Record<string, string> = {
+    sunday: '0',
+    sun: '0',
+    monday: '1',
+    mon: '1',
+    tuesday: '2',
+    tue: '2',
+    wednesday: '3',
+    wed: '3',
+    thursday: '4',
+    thu: '4',
+    friday: '5',
+    fri: '5',
+    saturday: '6',
+    sat: '6',
+  }
+  return map[day.trim().toLowerCase()] || '0'
 }
 
 async function ensureCron(
@@ -98,10 +116,11 @@ export const gatewayStartHandler: any = async (_event: any, ctx: any) => {
   // Read plugin config from OpenClaw config
   const openClawConfig = (ctx.config || {}) as Record<string, unknown>
   const cfg = ((openClawConfig as any)?.plugins?.entries?.['habit-coach']?.config || {}) as Record<string, unknown>
-  const stateFile = (cfg.stateFile as string) || './habit-state.json'
-  const user = (cfg.user as string) || 'user'
+  const stateFile = (cfg.stateFile as string) || '/home/greylee/.openclaw/workspace/memory/habit-state.json'
+  const user = (cfg.user as string) || 'Luc'
   const checkinTime = (cfg.checkinTime as string) || '07:00'
-  const reviewTime = (cfg.reviewTime as string) || '23:00'
+  const reviewDay = (cfg.reviewDay as string) || DEFAULT_REVIEW_DAY
+  const reviewTime = (cfg.reviewTime as string) || DEFAULT_REVIEW_TIME
   const deliveryChannels: DeliveryChannel[] = (cfg.deliveryChannels as DeliveryChannel[]) || []
 
   const habitConfig: HabitConfig = {
@@ -109,6 +128,7 @@ export const gatewayStartHandler: any = async (_event: any, ctx: any) => {
     user,
     deliveryChannels,
     checkinTime,
+    reviewDay,
     reviewTime,
     allowAgentMessages: cfg.allowAgentMessages as boolean | undefined,
   }
@@ -122,11 +142,12 @@ export const gatewayStartHandler: any = async (_event: any, ctx: any) => {
   desiredNames.add(taskName)
   await ensureCron(cron, taskName, `${minute} ${hour} * * *`, buildTaskCronMessage(habitConfig), existingJobs)
 
-  // 创建复盘 cron
+  // 创建每周复盘 cron
   const [reviewHour, reviewMinute] = reviewTime.split(':')
-  const reviewName = `Habit Coach - 复盘 (${reviewTime})`
+  const reviewName = `Habit Coach - 周复盘 (${reviewDay} ${reviewTime})`
   desiredNames.add(reviewName)
-  await ensureCron(cron, reviewName, `${reviewMinute} ${reviewHour} * * *`, buildReviewCronMessage(habitConfig), existingJobs)
+  const reviewCronExpr = `${reviewMinute} ${reviewHour} * * ${dayNameToCronDay(reviewDay)}`
+  await ensureCron(cron, reviewName, reviewCronExpr, buildReviewCronMessage(habitConfig), existingJobs)
 
   // 清理旧配置留下的 Habit Coach cron
   for (const job of existingJobs) {
