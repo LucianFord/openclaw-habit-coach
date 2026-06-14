@@ -27,9 +27,8 @@ export const getTasksTool: ToolDefinition<typeof parameters> = {
       let tasks = todayEntry?.tasks ?? []
 
       if (tasks.length === 0) {
-        // Generate fresh tasks for today
+        // No tasks at all — generate from template
         tasks = generateTasks(state)
-
         const newEntry: DailyLogEntry = {
           date: today,
           tasks,
@@ -38,10 +37,20 @@ export const getTasksTool: ToolDefinition<typeof parameters> = {
           completionRate: 0,
           notes: '',
         }
-
         const updatedState = addDailyEntry(state, newEntry)
         saveState(params.stateFile, updatedState)
         todayEntry = newEntry
+      } else {
+        // Tasks already exist (either from cron or from habit_update_tasks).
+        // Compute live completion stats instead of relying on stale counts.
+        const doneCount = tasks.filter(t => t.completed).length
+        const total = tasks.length
+        todayEntry = {
+          ...todayEntry!,
+          completedCount: doneCount,
+          totalCount: total,
+          completionRate: total > 0 ? doneCount / total : 0,
+        }
       }
 
       // Format output

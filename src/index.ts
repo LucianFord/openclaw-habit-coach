@@ -5,6 +5,7 @@ import { habitProgressTool } from './tools/habit_progress.js'
 import { habitReportTool } from './tools/habit_report.js'
 import { habitSetGoalTool } from './tools/habit_set_goal.js'
 import { habitGetStateTool } from './tools/habit_get_state.js'
+import { habitUpdateTasksTool } from './tools/habit_update_tasks.js'
 import { gatewayStartHandler } from './hooks/gateway_start.js'
 
 export default definePluginEntry({
@@ -18,6 +19,7 @@ export default definePluginEntry({
     api.registerTool(habitReportTool)
     api.registerTool(habitSetGoalTool)
     api.registerTool(habitGetStateTool)
+    api.registerTool(habitUpdateTasksTool)
 
     api.on('gateway_start', gatewayStartHandler)
   },

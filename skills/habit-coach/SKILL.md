@@ -19,6 +19,7 @@ Call when:
 - The user asks "what do I need to do today?" or similar
 - The `agent_end` hook triggers (pending tasks detected)
 - A new day has started and tasks haven't been generated
+- **NOTE:** If tasks already exist for today (e.g. set by `habit_update_tasks` earlier), this tool will NOT overwrite them — it shows what's already there with live completion stats
 
 ### `habit_checkin`
 Call when:
@@ -49,11 +50,18 @@ Call when:
 - The user says "I want to start X" or "I need to improve X"
 - The user has no active habits and needs to set up their routine
 
-### `habit_get_state`
+### `habit_update_tasks`
 Call when:
-- Debugging issues with the plugin
-- You need full context (all issues, phases, config) before advising
-- The user explicitly asks to see raw state
+- You and the user have discussed a specific plan for the day and need to **replace** the auto-generated tasks
+- The user says something like "today's plan is..." or "here's what I'm doing today"
+- The auto-generated tasks don't match what the user actually needs to do
+- **IMPORTANT:** This is the key tool for keeping tasks in sync with conversations. Whenever you agree on a task plan with the user, call this immediately so the state file stays accurate.
+- This preserves completed/skipped tasks and replaces only pending ones
+
+**Example usage:**
+User: "Today I need to finish my networking homework, go to the gym, register on a dating app, and find social events"
+→ Call `habit_update_tasks` with those 4 tasks
+→ Next time `habit_tasks` is called, it will show these instead of auto-generated ones
 
 ---
 
