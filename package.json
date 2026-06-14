@@ -1,6 +1,6 @@
 {
   "name": "openclaw-habit-coach",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "AI accountability coach plugin for OpenClaw — dynamic task scheduling, progress tracking, and reward/penalty system",
   "type": "module",
   "main": "dist/index.js",

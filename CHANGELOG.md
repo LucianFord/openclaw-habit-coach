@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-06-14
+
+### Added
+
+- **`habit_update_tasks`** — replace today's pending tasks from an in-conversation plan while preserving completed/skipped tasks
+- **Conversation-driven task sync** — daily plans agreed with the user no longer get overwritten by later auto-generated task delivery
+- **Packaging hygiene** — ignore generated reports and stale tarballs so ClawHub publishes a cleaner package
+
+### Fixed
+
+- `habit_tasks` now reads existing tasks with live completion stats instead of regenerating/overwriting them
+- New compiled `dist/tools/habit_update_tasks.*` files are tracked so source installs include the new tool
+
 ## [0.1.0] — 2026-06-13
 
 ### Added
