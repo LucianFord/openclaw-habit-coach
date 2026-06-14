@@ -12,3 +12,5 @@ tsconfig.json
 
 # Misc
 .DS_Store
+reports/
+*.tgz
